@@ -17,7 +17,7 @@ function loop() {
         chip8.cycle()
         
         if (chip8.drawFlag) {
-            draw()
+            renderer.draw(chip8.display)
         }
         
         chip8.setKeys()
