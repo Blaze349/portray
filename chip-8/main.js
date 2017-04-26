@@ -13,7 +13,13 @@ function start() {
 
 function loop() {
     while(game) {
-    
+        chip8.cycle()
+        
+        if (chip8.drawFlag) {
+            draw()
+        }
+        
+        chip8.setKeys()
     }
 }
 
