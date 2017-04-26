@@ -1,11 +1,15 @@
 class Chip8 {
     constructor() {
         this.font_set = []
-        init()
+        this.init()
     }
     
     init() {
         
+        this.displayHeight = 32
+        this.displayWidth = 64
+        
+        this.display = new Array(this.displayHeight * this.displayWidth)
         this.opcode = null
         
         this.key = new Array(16)
@@ -43,7 +47,11 @@ class Chip8 {
         }
     }
     
-    sPx() { }
+    clear() {
+        for (var i = 0; i < this.display.length; i++) {
+            this.display[i] = 0
+        }
+    }
     
     cycle() {
         //fetch code
@@ -65,17 +73,17 @@ class Chip8 {
                 break
             case 0x3000:
                 if (this.V[this.opcode & 0x0F00] == (this.opcode & 0x00FF)) {
-                    this.pc += 2
+                    this.pc += 4
                 }
                 break
             case 0x4000:
                 if (this.V[this.opcode & 0x0F00] != (this.opcode & 0x00FF)) {
-                    this.pc += 2
+                    this.pc += 4
                 }
                 break
             case 0x5000:
                 if (this.V[this.opcode & 0x0F00] == this.V[this.opcode & 0x00F0]) {
-                    this.pc += 2
+                    this.pc += 4
                 }
                 break
             case 0x6000:
@@ -134,7 +142,7 @@ class Chip8 {
                 break
             case 0x9000:
                 if(this.V[this.opcode & 0x0F00] != this.V[this.opcode & 0x00F0]) {
-                    this.pc += 2
+                    this.pc += 4
                 }
                 break
             case 0xA000:
@@ -147,8 +155,38 @@ class Chip8 {
                 this.V[this.opcode & 0x0F00] = (Math.random() * 255) & (this.opcode & 0x00FF)
                 break
             case 0xD000:
+                var x = V[(this.opcode & 0x0F00) >> 8]
+                var y = V[(this.opcode & 0x00F0) >> 4]
+                var height = this.opcode & 0x000F
+                
+                this.V[0xF] = 0
+                
+                //loop through the rows
+                
+                for (var yline = 0; yline < height; yline++) {
+                    //find the bit flag on the line
+                    var pixel = this.memory[this.I + yline]
+                    
+                    for (var xline = 0; xline < height; xline++) {
+                        /* 
+                            Remember that using & with a bit returns 1 if they are both 1?
+                            This does that to pixel. It goes through it and shifts it using xline for the next part
+                        */
+                        if ((pixel & (0x80 >> xline)) != 0) {
+                            /* This gets the grid coords. X + xline gets x coordinate y+ yline gets the y coordinate
+                            You can just multiply y by width to get the real coord
+                            */
+                            if (this.display[x + xline + ((y + yline) * this.displayWIdth)] == 1) { this.V[0xF] = 1 }
+                            this.display[x + xline + ((y + yline) * this.displayWIdth)] ^= 1
+                        }
+                    }
+                }
+                this.drawFlag=true
+                this.pc += 2
                 break
-            
+                
+                //input
+                
         }
         
         //update timers
