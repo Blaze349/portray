@@ -3,8 +3,23 @@
     <head>
         <title>Blaze349 Emulator</title>
     </head>
-    <body style='background-color: #EE4600;'>
+    <body>
+        <div>
+            <input type='file' id='fileLoader'>
+            
+        </div>
         <canvas id='emu' width='512' height='256'>
         </canvas>
+        
+        <script src='./main.js'></script>
+        <script>
+            window.onload = function() {
+              var fileInput = document.getElementById('fileLoader');
+              fileInput.addEventListener('change', function(e) {
+                var file = fileInput.files[0];
+                start(file);
+              });
+            }
+        </script>
     </body>
 </html>
