@@ -102,7 +102,7 @@ class Chip8 {
                 this.memory[i + 512] = file[i]
             })
         })
-        
+        console.log(this.memory)
         f.readAsArrayBuffer(fileName)
     }
     
@@ -128,7 +128,7 @@ class Chip8 {
         //fetch code
         console.log("Cycling")
         this.opcode = this.memory[this.pc] << 8 | this.memory[this.pc + 1]
-        //this.opcode = this.byteToHex(this.opcode)
+        this.opcode = this.byteToHex(this.opcode)
         //this just returns the first 'letter' of the opcode
         switch (this.opcode & 0xF000) {
             
@@ -238,13 +238,17 @@ class Chip8 {
                 }
                 break
             case 0xA000:
+                console.log("Doing op")
                 this.I = this.opcode & 0x0FFF
+                this.pc += 2
                 break
             case 0xB000:
+                console.log("Doing op")
                 this.pc = this.V[0] + (this.opcode & 0x0FFF)
                 break
             case 0xC000:
                 this.V[(this.opcode & 0x0F00)>> 8] = (Math.random() * 255) & (this.opcode & 0x00FF)
+                this.pc += 2
                 break
             case 0xD000:
                 var x = V[(this.opcode & 0x0F00) >> 8]
@@ -356,6 +360,8 @@ class Chip8 {
                         break
                 }
                 break
+            default:
+                console.log("Throw errow", this.opcode.toString(16))
                 
         }
         
@@ -387,7 +393,7 @@ class Renderer {
     }
     
     draw(display) {
-        
+        console.log("Drawing")
         this.clear()
         
         for (var i = 0; i < display.length; i++) {
