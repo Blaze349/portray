@@ -19,7 +19,9 @@ class Chip8 {
           0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
           0xF0, 0x80, 0xF0, 0x80, 0x80  // F
         ]
-        this.init()
+        console.log(this.font_set)
+    
+        //this.init()
     }
     
     init() {
@@ -98,9 +100,9 @@ class Chip8 {
         var f = new FileReader()
         f.addEventListener('done', function() {
             var file = new Uint8Array(f.result)
-            file.map(function(val, i) {
-                this.memory[i + 512] = file[i]
-            })
+            for (var i = 0; i < file.length; i++) {
+              this.memory[i + 0x200] = file[i]  
+            }
         })
         console.log(this.memory)
         f.readAsArrayBuffer(fileName)
@@ -127,11 +129,13 @@ class Chip8 {
     cycle() {
         //fetch code
         console.log("Cycling")
-        this.opcode = this.memory[this.pc] << 8 | this.memory[this.pc + 1]
+        this.opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1]
+        console.log(this.memory)
+        console.log("before conversion", this.opcode)
         this.opcode = this.byteToHex(this.opcode)
+        console.log(this.opcode)
         //this just returns the first 'letter' of the opcode
         switch (this.opcode & 0xF000) {
-            
             case 0x0000:
                 switch(this.opcode & 0x00FF) {
                     case 0x00E0:
@@ -141,8 +145,9 @@ class Chip8 {
                     case 0x00EE:
                         this.pc = this.stack[--this.stackPointer]
                         break
-                    default:
+                    case 0x0000:
                         this.pc += 2
+                        break
                 }
                 break
             case 0x1000:
@@ -251,8 +256,8 @@ class Chip8 {
                 this.pc += 2
                 break
             case 0xD000:
-                var x = V[(this.opcode & 0x0F00) >> 8]
-                var y = V[(this.opcode & 0x00F0) >> 4]
+                var x = this.V[(this.opcode & 0x0F00) >> 8]
+                var y = this.V[(this.opcode & 0x00F0) >> 4]
                 var height = this.opcode & 0x000F
                 
                 this.V[0xF] = 0
