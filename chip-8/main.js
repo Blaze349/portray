@@ -64,7 +64,7 @@ class Chip8 {
         this.pc = 512
         
         this.keySet = {
-            '1': 0x1,'2': 0x2,'3': 0x3,'4': 0x4,
+            '1' : 0x1,'2': 0x2,'3': 0x3,'4': 0x4,
             'Q': 0x4,'W':0x5,'E': 0x6,'R': 0xD,
             'A': 0x7,'S':0x8,'D': 0x9,'F': 0xE,
             'Z': 0xA,'X':0x0,'C': 0xB, 'V':0xF,
@@ -72,18 +72,31 @@ class Chip8 {
         
         this.keyPressed = null
         
-        document.onkeyup = document.onkeydown = this.OnKey;
+        document.onkeydown = this.onKey
         setInterval(this.updateTimers,60)
     }
     
     onKey(e) {
         var str = String.fromCharCode(e.which);
-        var val = (e.type == 'keydown') ? true : false;
+        var val = null
         
-        var i = this.keySet[str];
+        if (e.type == "keydown") {
+            val = 1
+        } else {
+            val = 0
+        }
         
+        var i = {
+            '1': 0x1,'2': 0x2,'3': 0x3,'4': 0x4,
+            'Q': 0x4,'W':0x5,'E': 0x6,'R': 0xD,
+            'A': 0x7,'S':0x8,'D': 0x9,'F': 0xE,
+            'Z': 0xA,'X':0x0,'C': 0xB, 'V':0xF
+        }[str];
+        
+        console.log("Checking i")
         if(i !== undefined) {
           this.key[i] = val;
+          console.log("key", this.key)
         }
         
         this.keyPressed = this.key.reduce( ((prevValue,currentValue) => (prevValue | currentValue)) )
@@ -142,12 +155,12 @@ class Chip8 {
     cycle() {
         if (this.loaded = true) {
             //fetch code
-            console.log("Cycling")
+            //console.log("Cycling")
             this.opcode = this.getTwoLocationsBigEndian(this.pc)
             //console.log(this.memory)
-            console.log("before conversion", this.opcode)
+            //console.log("before conversion", this.opcode)
             this.opcode = this.byteToHex(this.opcode)
-            console.log(this.opcode)
+            //console.log(this.opcode)
             //this just returns the first 'letter' of the opcode
             switch (this.opcode & 0xF000) {
                 case 0x0000:
@@ -157,10 +170,11 @@ class Chip8 {
                             this.pc += 2
                             break
                         case 0x00EE:
-                            this.pc = this.stack[--this.stackPointer]
+                            this.stackPointer--
+                            this.pc = this.stack[this.stackPointer]
                             break
                         case 0x0000:
-                            console.log("switch is working")
+                            //console.log("switch is working")
                             this.pc += 2
                             break
                     }
@@ -209,28 +223,29 @@ class Chip8 {
                     switch(this.opcode & 0x000F) {
                         //bitops incoming
                         case 0x0000:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x00F0) >> 4]
                             this.pc += 2
                             break
                         case 0x0001:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] | this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x0F00) >> 8] | this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
                             this.pc += 2
                             break
                         case 0x0002:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] & this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x0F00) >> 8] & this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
                             this.pc += 2
                             break
                         case 0x0003:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] ^ this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x0F00)>> 8] ^ this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
                             this.pc += 2
                             break
                         //time for maths
                         case 0x0004:
-                            this.V[(this.opcode & 0x0F00)>> 8] += this.V[(this.opcode & 0x00F0) >> 4]
-                            this.V[0xF] = (this.V[(this.opcode & 0x0F00) >> 8] > 255) ? 1 : 0
+                            this.V[(this.opcode & 0x0F00) >> 8] += this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[0xF] = this.V[(this.opcode & 0x0F00) >> 8] > 255 ? 1 : 0
+                            console.log(this.V[0xF])
                             if (this.V[(this.opcode & 0x0F00) >> 8] > 255) {
                                 this.V[(this.opcode & 0x0F00) >> 8] -= 256
                             }
@@ -302,14 +317,14 @@ class Chip8 {
                                 /* This gets the grid coords. X + xline gets x coordinate y+ yline gets the y coordinate
                                 You can just multiply y by width to get the real coord
                                 */
-                                if (this.display[x + xline + ((y + yline) * this.displayWidth)] == 1) { 
+                                if (this.display[x + xline + ((y + yline) * 64)] == 1) { 
                                     this.V[0xF] = 1 
                                 }
-                                this.display[x + xline + ((y + yline) * this.displayWidth)] ^= 1
+                                this.display[x + xline + ((y + yline) * 64)] ^= 1
                             }
                         }
                     }
-                    console.log(this.display)
+                    //console.log(this.display)
                     this.drawFlag=true
                     this.pc += 2
                     break
@@ -341,6 +356,7 @@ class Chip8 {
                         case 0x000A:
                             this.keyPressed = false
                             for (var i = 0; i < 16; i++) {
+                                console.log("Checking key presses")
                                 console.log(this.key[i])
                                 if (this.key[i] != 0) {
                                     this.V[(this.opcode & 0x0F00) >> 8] = i
@@ -465,14 +481,15 @@ function start(file) {
 function loop() {
     setInterval(function() {
         chip8.cycle()
-        /*chip8.cycle()
+        chip8.cycle()
         chip8.cycle()
         chip8.cycle()
         
         chip8.cycle()
         chip8.cycle()
         chip8.cycle()
-        chip8.cycle()*/
+        chip8.cycle()
+        
         
         if (chip8.drawFlag) {
             chip8.renderer.draw(chip8.display)
