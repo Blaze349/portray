@@ -144,7 +144,7 @@ class Chip8 {
             //fetch code
             console.log("Cycling")
             this.opcode = this.getTwoLocationsBigEndian(this.pc)
-            console.log(this.memory)
+            //console.log(this.memory)
             console.log("before conversion", this.opcode)
             this.opcode = this.byteToHex(this.opcode)
             console.log(this.opcode)
@@ -302,11 +302,14 @@ class Chip8 {
                                 /* This gets the grid coords. X + xline gets x coordinate y+ yline gets the y coordinate
                                 You can just multiply y by width to get the real coord
                                 */
-                                if (this.display[x + xline + ((y + yline) * this.displayWIdth)] == 1) { this.V[0xF] = 1 }
-                                this.display[x + xline + ((y + yline) * this.displayWIdth)] ^= 1
+                                if (this.display[x + xline + ((y + yline) * this.displayWidth)] == 1) { 
+                                    this.V[0xF] = 1 
+                                }
+                                this.display[x + xline + ((y + yline) * this.displayWidth)] ^= 1
                             }
                         }
                     }
+                    console.log(this.display)
                     this.drawFlag=true
                     this.pc += 2
                     break
@@ -338,6 +341,7 @@ class Chip8 {
                         case 0x000A:
                             this.keyPressed = false
                             for (var i = 0; i < 16; i++) {
+                                console.log(this.key[i])
                                 if (this.key[i] != 0) {
                                     this.V[(this.opcode & 0x0F00) >> 8] = i
                                     this.keyPressed = true
@@ -420,25 +424,25 @@ class Renderer {
     }
     
     clear() {
-        this.ctx.clearRect(0,0,512,256)
+        this.ctx.clearRect(0,0,64 * 8,32 * 8)
         
     }
     
     draw(display) {
         console.log("Drawing")
-        this.clear()
+        this.ctx.fillStyle = '#000000'
+        this.ctx.fillRect(0,0,64 * 8,32 * 8)
         
         for (var i = 0; i < display.length; i++) {
-            var x = (display[i] % 64) * 64
-            var y = Math.floor((display[i] - x) / 64) * 64
+            var y = i/64 | 0;
+            var x = i - y*64;
             
-            if (display[i] > 1) {
+            if (display[i] >= 1) {
                 this.ctx.fillStyle = '#FFFFFF'
-            } else {
-                this.ctx.fillStyle = '#000000'
+                this.ctx.fillRect(x * 8, y * 8, 8, 8)
             }
             
-            this.ctx.fillRect(x, y, 64, 64)
+            
         }
     }
 }
@@ -461,14 +465,14 @@ function start(file) {
 function loop() {
     setInterval(function() {
         chip8.cycle()
-        chip8.cycle()
+        /*chip8.cycle()
         chip8.cycle()
         chip8.cycle()
         
         chip8.cycle()
         chip8.cycle()
         chip8.cycle()
-        chip8.cycle()
+        chip8.cycle()*/
         
         if (chip8.drawFlag) {
             chip8.renderer.draw(chip8.display)
