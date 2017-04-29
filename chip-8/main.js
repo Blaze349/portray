@@ -198,9 +198,11 @@ class Chip8 {
                     break
                 case 0x6000:
                     this.V[(this.opcode & 0x0F00) >> 8] = this.opcode & 0x00FF
+                    this.pc += 2
                     break
                 case 0x7000:
                     this.V[(this.opcode & 0x0F00) >> 8] += this.opcode & 0x00FF
+                    this.pc += 2
                     break
                 case 0x8000:
                     
@@ -208,18 +210,22 @@ class Chip8 {
                         //bitops incoming
                         case 0x0000:
                             this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x00F0) >> 4]
+                            this.pc += 2
                             break
                         case 0x0001:
                             this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] | this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
+                            this.pc += 2
                             break
                         case 0x0002:
                             this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] & this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
+                            this.pc += 2
                             break
                         case 0x0003:
                             this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x0F00)>> 8] ^ this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
+                            this.pc += 2
                             break
                         //time for maths
                         case 0x0004:
@@ -228,23 +234,27 @@ class Chip8 {
                             if (this.V[(this.opcode & 0x0F00) >> 8] > 255) {
                                 this.V[(this.opcode & 0x0F00) >> 8] -= 256
                             }
+                            this.pc += 2
                             break
                         case 0x0005:
                             this.V[0xF] = (this.V[(this.opcode & 0x0F00) >> 8] > this.V[(this.opcode & 0x00F0) >> 4]) ? 0 : 1
                             this.V[(this.opcode & 0x0F00) >> 8] -= this.V[(this.opcode & 0x00F0) >> 4]
-                            
+                            this.pc += 2
                             break
                         case 0x0006:
                             this.V[0xF] = this.V[(this.opcode & 0x0F00)>> 8] & 0x1
                             this.V[(this.opcode & 0x0F00)>> 8] >>= 1
+                            this.pc += 2
                             break
                         case 0x0007:
                             this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x00F0) >> 4] - this.V[(this.opcode & 0x0F00)>> 8]
+                            this.pc += 2
                             break
                         case 0x000E:
                             //remember that each v register is 16 bytes? 128 bits
                             this.V[0xF] = this.V[(this.opcode & 0x0F00)>> 8] & 0x80
                             this.V[(this.opcode & 0x0F00)>> 8] <<= 1
+                            this.pc += 2
                             break
                             
                     }
