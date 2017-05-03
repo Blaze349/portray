@@ -34,6 +34,9 @@ class Chip8 {
         
         this.key = new Array(16)
         
+        for (var i = 0; i < 16; i++) {
+            this.key[i] = 0x0
+        }
         //the 16 registers
         this.V = new Array(16)
 
@@ -336,6 +339,7 @@ class Chip8 {
                 case 0xE000:
                     switch(this.opcode & 0x000F) {
                         case 0x000E:
+                            console.log("key check")
                             if(this.key[this.V[(this.opcode & 0x0F00) >> 8]] != 0) {
                                 this.pc += 4
                             }else {
@@ -343,6 +347,7 @@ class Chip8 {
                             }
                             break
                         case 0x0001:
+                            console.log("key check")
                             if(this.key[this.V[(this.opcode & 0x0F00) >> 8]] == 0) {
                                 this.pc += 4
                             }else {
