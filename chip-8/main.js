@@ -72,13 +72,9 @@ class Chip8 {
         
         this.keyPressed = null
         
-        document.onkeydown = this.onKey
-        setInterval(this.updateTimers,60)
-    }
-    
-    onKey(e) {
-        var str = String.fromCharCode(e.which);
-        var val = null
+        document.onkeydown = (e) => {
+            var str = String.fromCharCode(e.which);
+        var val = 0
         
         if (e.type == "keydown") {
             val = 1
@@ -92,14 +88,21 @@ class Chip8 {
             'A': 0x7,'S':0x8,'D': 0x9,'F': 0xE,
             'Z': 0xA,'X':0x0,'C': 0xB, 'V':0xF
         }[str];
-        
+        console.log(i)
         console.log("Checking i")
         if(i !== undefined) {
+          
           this.key[i] = val;
           console.log("key", this.key)
         }
         
         this.keyPressed = this.key.reduce( ((prevValue,currentValue) => (prevValue | currentValue)) )
+        }
+        setInterval(this.updateTimers,60)
+    }
+    
+    onKey(e) {
+        
     }
     updateTimers() {
         if (this.delayTimer > 0) {
@@ -283,12 +286,12 @@ class Chip8 {
                     }
                     break
                 case 0xA000:
-                    console.log("Doing op")
+                    
                     this.I = this.opcode & 0x0FFF
                     this.pc += 2
                     break
                 case 0xB000:
-                    console.log("Doing op")
+                    
                     this.pc = this.V[0] + (this.opcode & 0x0FFF)
                     break
                 case 0xC000:
@@ -445,7 +448,7 @@ class Renderer {
     }
     
     draw(display) {
-        console.log("Drawing")
+        
         this.ctx.fillStyle = '#000000'
         this.ctx.fillRect(0,0,64 * 8,32 * 8)
         
