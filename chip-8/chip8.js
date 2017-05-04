@@ -281,14 +281,16 @@ class Chip8 {
             case 0xE000:
                 switch(this.opcode & 0x000F) {
                     case 0x000E:
-                        if(this.key[this.V[(this.opcode & 0x0F00) >> 8]] != 0) {
+                        console.log("key check")
+                        if (this.key[this.V[(this.opcode & 0x0F00) >> 8]] != 0) {
                             this.pc += 4
                         }else {
                             this.pc += 2
                         }
                         break
                     case 0x0001:
-                        if(this.key[this.V[(this.opcode & 0x0F00) >> 8]] == 0) {
+                        console.log("key check")
+                        if (this.key[this.V[(this.opcode & 0x0F00) >> 8]] == 0) {
                             this.pc += 4
                         }else {
                             this.pc += 2

@@ -159,7 +159,7 @@ class Chip8 {
     }
     
     cycle() {
-        if (this.loaded = true) {
+        if (this.loaded == true) {
             //fetch code
             //console.log("Cycling")
             this.opcode = this.getTwoLocationsBigEndian(this.pc)
@@ -176,8 +176,7 @@ class Chip8 {
                             this.pc += 2
                             break
                         case 0x00EE:
-                            this.stackPointer--
-                            this.pc = this.stack[this.stackPointer]
+                            this.pc = this.stack[--this.stackPointer]
                             break
                         case 0x0000:
                             //console.log("switch is working")
@@ -203,7 +202,7 @@ class Chip8 {
                     }
                     break
                 case 0x4000:
-                    if (this.V[(this.opcode & 0x0F00)>> 8] != (this.opcode & 0x00FF)) {
+                    if (this.V[(this.opcode & 0x0F00) >> 8] != (this.opcode & 0x00FF)) {
                         this.pc += 4
                     } else {
                         this.pc += 2
@@ -212,7 +211,7 @@ class Chip8 {
                 case 0x5000:
                     if (this.V[(this.opcode & 0x0F00) >> 8] == this.V[(this.opcode & 0x00F0) >> 4]) {
                         this.pc += 4
-                    }else {
+                    } else {
                         this.pc += 2
                     }
                     break
@@ -243,14 +242,14 @@ class Chip8 {
                             this.pc += 2
                             break
                         case 0x0003:
-                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x0F00)>> 8] ^ this.V[(this.opcode & 0x00F0) >> 4]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x0F00) >> 8] ^ this.V[(this.opcode & 0x00F0) >> 4]
                             this.V[0xF] = 0
                             this.pc += 2
                             break
                         //time for maths
                         case 0x0004:
                             this.V[(this.opcode & 0x0F00) >> 8] += this.V[(this.opcode & 0x00F0) >> 4]
-                            this.V[0xF] = this.V[(this.opcode & 0x0F00) >> 8] > 255 ? 1 : 0
+                            this.V[0xF] = this.V[(this.opcode & 0x0F00) >> 8] > 256 ? 1 : 0
                             console.log(this.V[0xF])
                             if (this.V[(this.opcode & 0x0F00) >> 8] > 255) {
                                 this.V[(this.opcode & 0x0F00) >> 8] -= 256
@@ -263,18 +262,18 @@ class Chip8 {
                             this.pc += 2
                             break
                         case 0x0006:
-                            this.V[0xF] = this.V[(this.opcode & 0x0F00)>> 8] & 0x1
-                            this.V[(this.opcode & 0x0F00)>> 8] >>= 1
+                            this.V[0xF] = this.V[(this.opcode & 0x0F00) >> 8] & 0x1
+                            this.V[(this.opcode & 0x0F00) >> 8] >>= 1
                             this.pc += 2
                             break
                         case 0x0007:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.V[(this.opcode & 0x00F0) >> 4] - this.V[(this.opcode & 0x0F00)>> 8]
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.V[(this.opcode & 0x00F0) >> 4] - this.V[(this.opcode & 0x0F00) >> 8]
                             this.pc += 2
                             break
                         case 0x000E:
                             //remember that each v register is 16 bytes? 128 bits
-                            this.V[0xF] = this.V[(this.opcode & 0x0F00)>> 8] & 0x80
-                            this.V[(this.opcode & 0x0F00)>> 8] <<= 1
+                            this.V[0xF] = this.V[(this.opcode & 0x0F00) >> 8] & 0x80
+                            this.V[(this.opcode & 0x0F00) >> 8] <<= 1
                             this.pc += 2
                             break
                             
@@ -282,7 +281,7 @@ class Chip8 {
                     
                     break
                 case 0x9000:
-                    if(this.V[(this.opcode & 0x0F00)>> 8] != this.V[(this.opcode & 0x00F0) >> 4]) {
+                    if(this.V[(this.opcode & 0x0F00) >> 8] != this.V[(this.opcode & 0x00F0) >> 4]) {
                         this.pc += 4
                     } else {
                         this.pc += 2
@@ -298,7 +297,7 @@ class Chip8 {
                     this.pc = this.V[0] + (this.opcode & 0x0FFF)
                     break
                 case 0xC000:
-                    this.V[(this.opcode & 0x0F00)>> 8] = (Math.random() * 255) & (this.opcode & 0x00FF)
+                    this.V[(this.opcode & 0x0F00) >> 8] = (Math.random() * 255) & (this.opcode & 0x00FF)
                     this.pc += 2
                     break
                 case 0xD000:
@@ -359,7 +358,7 @@ class Chip8 {
                 case 0xF000:
                     switch(this.opcode & 0x000F) {
                         case 0x0007:
-                            this.V[(this.opcode & 0x0F00)>> 8] = this.delayTimer
+                            this.V[(this.opcode & 0x0F00) >> 8] = this.delayTimer
                             break
                         case 0x000A:
                             this.keyPressed = false
